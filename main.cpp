@@ -6,6 +6,7 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -346,23 +347,23 @@ public:
         float money;
         cout << "Enter amount of money: ";
         cin >> money;
-        vector<Product> boughtProducts;
-        float totalCost = 0;
+        map<string, pair<int, float>> boughtProducts;
 
+        float totalCost = 0;
         while (money > 0) {
             bool purchaseMade = false;
-            for (int i = 0; i < this->products.size(); i++) {
-                if (money >= this->products[i].getProductPrice() && this->products[i].getProductLeft() > 0) {
-                    cout << "Would you like to buy " << this->products[i].getProductName() << " for $" << this->products[i].getProductPrice() << "? (y/n): ";
-                    char choice;
-                    cin >> choice; 
-                    if (choice == 'y') {
-                        purchaseMade = true;
-                        money -= this->products[i].getProductPrice();
-                        this->products[i].setProductLeft(this->products[i].getProductLeft() - 1);
-                        boughtProducts.push_back(this->products[i]);
-                        totalCost += this->products[i].getProductPrice();
+            for (int i = 0; i < this -> products.size(); i++) {
+                if (money >= this -> products[i].getProductPrice() && this -> products[i].getProductLeft() > 0) {
+                    purchaseMade = true;
+                    money -= this -> products[i].getProductPrice();
+                    this -> products[i].setProductLeft(this -> products[i].getProductLeft() - 1);
+                    if (boughtProducts.find(this -> products[i].getProductName()) == boughtProducts.end()) {
+                        boughtProducts[this -> products[i].getProductName()] = make_pair(1, this -> products[i].getProductPrice());
+                    }else {
+                        boughtProducts[this -> products[i].getProductName()].first += 1;
+                        boughtProducts[this -> products[i].getProductName()].second += this -> products[i].getProductPrice();
                     }
+                    totalCost += this -> products[i].getProductPrice();
                 }
             }
             if (!purchaseMade) {
@@ -374,24 +375,24 @@ public:
             cout << "Products bought: " << endl;
 
             for (auto prod : boughtProducts) {
-                cout << "Name: " << prod.getProductName() << ", Price: " << prod.getProductPrice() << endl;
+                cout << prod.first << ", " << prod.second.first << "x, $" << prod.second.second << endl;
             }
-            cout << "Total cost: " << totalCost << endl;
-            cout << "Remaining money: " << money << endl;
+            cout << "Total cost: $" << totalCost << endl;
+            cout << "Remaining money: $" << money << endl;
         } else {
             cout << "No products were bought." << endl;
         }
     }
     //Top 3 most available products (Task 13/Option 13)
     void topMostAvailable() {
-        sort(this->products.begin(), this->products.end(), [](Product a, Product b) {
+        sort(this -> products.begin(), this -> products.end(), [](Product a, Product b) {
         return a.getProductLeft() > b.getProductLeft();
         });
 
         int count = 0;
         cout << "Top 3 most available products in stock: " << endl;
 
-        for (auto prod : this->products) {
+        for (auto prod : this -> products) {
             if (count == 3) break;
                 cout << "Name: " << prod.getProductName() << ", In Stock: " << prod.getProductLeft() << endl;
                 count++;
@@ -399,14 +400,14 @@ public:
     }
     //Top 3 least available products (Task 14/Option 14)
     void topLeastAvailable() {
-        sort(this->products.begin(), this->products.end(), [](Product a, Product b) {
+        sort(this -> products.begin(), this -> products.end(), [](Product a, Product b) {
         return a.getProductLeft() < b.getProductLeft();
         });
 
         cout << "Top 3 least available products: " << endl;
 
-        for (int i = 0; i < 3 && i < this->products.size(); i++) {
-            cout << "Name: " << this->products[i].getProductName() << ", In stock: " << this->products[i].getProductLeft() << endl;
+        for (int i = 0; i < 3 && i < this -> products.size(); i++) {
+            cout << "Name: " << this -> products[i].getProductName() << ", In stock: " << this -> products[i].getProductLeft() << endl;
         }
     }
     //Menu shown to the user
