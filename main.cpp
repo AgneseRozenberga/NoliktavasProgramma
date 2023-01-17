@@ -341,7 +341,74 @@ public:
             tempProducts[i].productPrint();
         }
     }
+    //Shopping time (Task 12/Option 12)
+    void shopProducts() {
+        float money;
+        cout << "Enter amount of money: ";
+        cin >> money;
+        vector<Product> boughtProducts;
+        float totalCost = 0;
 
+        while (money > 0) {
+            bool purchaseMade = false;
+            for (int i = 0; i < this->products.size(); i++) {
+                if (money >= this->products[i].getProductPrice() && this->products[i].getProductLeft() > 0) {
+                    cout << "Would you like to buy " << this->products[i].getProductName() << " for $" << this->products[i].getProductPrice() << "? (y/n): ";
+                    char choice;
+                    cin >> choice; 
+                    if (choice == 'y') {
+                        purchaseMade = true;
+                        money -= this->products[i].getProductPrice();
+                        this->products[i].setProductLeft(this->products[i].getProductLeft() - 1);
+                        boughtProducts.push_back(this->products[i]);
+                        totalCost += this->products[i].getProductPrice();
+                    }
+                }
+            }
+            if (!purchaseMade) {
+                cout << "Not enough money to buy any more products." << endl;
+                break;
+            }
+        }
+        if (boughtProducts.size() > 0) {
+            cout << "Products bought: " << endl;
+
+            for (auto prod : boughtProducts) {
+                cout << "Name: " << prod.getProductName() << ", Price: " << prod.getProductPrice() << endl;
+            }
+            cout << "Total cost: " << totalCost << endl;
+            cout << "Remaining money: " << money << endl;
+        } else {
+            cout << "No products were bought." << endl;
+        }
+    }
+    //Top 3 most available products (Task 13/Option 13)
+    void topMostAvailable() {
+        sort(this->products.begin(), this->products.end(), [](Product a, Product b) {
+        return a.getProductLeft() > b.getProductLeft();
+        });
+
+        int count = 0;
+        cout << "Top 3 most available products in stock: " << endl;
+
+        for (auto prod : this->products) {
+            if (count == 3) break;
+                cout << "Name: " << prod.getProductName() << ", In Stock: " << prod.getProductLeft() << endl;
+                count++;
+        }
+    }
+    //Top 3 least available products (Task 14/Option 14)
+    void topLeastAvailable() {
+        sort(this->products.begin(), this->products.end(), [](Product a, Product b) {
+        return a.getProductLeft() < b.getProductLeft();
+        });
+
+        cout << "Top 3 least available products: " << endl;
+
+        for (int i = 0; i < 3 && i < this->products.size(); i++) {
+            cout << "Name: " << this->products[i].getProductName() << ", In stock: " << this->products[i].getProductLeft() << endl;
+        }
+    }
     //Menu shown to the user
     void menu() {
         cout << "\nOption 1: Add a product/-s to stock" << endl;
@@ -355,6 +422,9 @@ public:
         cout << "Option 9: Top 3 most expensive products" << endl;
         cout << "Option 10: Top 3 cheapest products" << endl;
         cout << "Option 11: End program" << endl;
+	cout << "Option 12: Go shopping" << endl;
+        cout << "Option 13: Top 3 most available products" << endl;
+        cout << "Option 14: Top 3 least available products" << endl;
         cout << "Choose an option (by typing a number): ";
     }
 };
@@ -369,7 +439,7 @@ int main() {
         products.menu();
         cin >> option;
         cout << "\nChosen Option: " << option << endl;
-        enum choices {One = 1, Two = 2, Three = 3, Four = 4, Five = 5, Six = 6, Seven = 7, Eight = 8, Nine = 9, Ten = 10, Eleven = 11};
+        enum choices {One = 1, Two = 2, Three = 3, Four = 4, Five = 5, Six = 6, Seven = 7, Eight = 8, Nine = 9, Ten = 10, Eleven = 11, Twelve = 12, Thirteen = 13, Fourteen = 14};
 
         switch(option) {
             case One:
@@ -414,6 +484,18 @@ int main() {
                 break;
             case Eleven:
                 //End program
+                break;
+	    case Twelve:
+                //Functions that lets user go shopping
+                products.shopProducts();
+                break;
+            case Thirteen:
+                //Function that displays top 3 most available products
+                products.topMostAvailable();
+                break;
+            case Fourteen:
+                //Function that displays top 3 least available products
+                products.topLeastAvailable();
                 break;
             default:
                 cout << "Error: Choose one of the options!" << endl;
